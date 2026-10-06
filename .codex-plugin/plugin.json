@@ -1,0 +1,22 @@
+{
+  "name": "risicare",
+  "description": "Add, extend, debug and explain Risicare (AI agent and LLM tracing) in Python and JavaScript projects.",
+  "version": "0.1.0",
+  "author": { "name": "Conscience Labs" },
+  "homepage": "https://risicare.ai/docs",
+  "repository": "https://github.com/Conscience-AI-Labs/risicare-skills",
+  "license": "LicenseRef-Proprietary",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Risicare",
+    "shortDescription": "Trace AI agents and LLM calls with Risicare.",
+    "developerName": "Conscience Labs",
+    "category": "observability",
+    "defaultPrompt": [
+      "Add Risicare tracing to this application and confirm a trace arrived.",
+      "Audit the Risicare instrumentation in this repository.",
+      "Explain this Risicare error code."
+    ],
+    "websiteURL": "https://risicare.ai"
+  }
+}

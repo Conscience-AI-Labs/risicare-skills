@@ -1,0 +1,35 @@
+Copyright (c) 2026 Conscience Labs Pvt. Ltd. All rights reserved.
+
+RISICARE SKILL LICENSE
+
+The Risicare skill (the "Skill") is the files of the risicare agent skill: SKILL.md, the
+reference files, and the code examples in them. Risicare is a product of Conscience Labs Pvt. Ltd.
+The Skill is the proprietary property of Conscience Labs Pvt. Ltd. The Risicare SDKs and the
+Risicare service have their own terms, and this license does not change them.
+
+LICENSE GRANT:
+Subject to an active Risicare subscription, including access granted through the Risicare
+private beta, you are granted a limited, non-exclusive, non-transferable license to:
+1. install the Skill in your projects and development environments, and let your AI coding
+   agents read and follow it;
+2. keep the installed copy of the Skill, with this LICENSE file, in the source repositories of
+   your projects, including a public repository, and adapt that copy for your own projects;
+3. copy, modify and use the code examples of the Skill in your applications, solely to
+   integrate the Risicare SDKs and use the Risicare service.
+The code that you or your agents write by following the Skill belongs to you. The Risicare SDK
+that this code uses stays subject to the terms of the Risicare SDKs.
+
+RESTRICTIONS:
+1. You shall not sell, sublicense, lease, publish or distribute the Skill, or a modified version
+   of it, as a standalone tool, product or skill, other than as permitted in grant 2.
+2. You shall not use the Skill to build a product or service that competes with Risicare.
+3. You shall not remove or alter this notice.
+
+WARRANTY DISCLAIMER:
+THE SKILL IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE. THE SKILL GIVES INSTRUCTIONS TO AI AGENTS. REVIEW EVERY CHANGE THAT AN
+AGENT MAKES TO YOUR CODE.
+
+Licensing inquiries and custom enterprise terms: info@consciencelabs.ai
+Support: support@risicare.ai

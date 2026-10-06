@@ -1,0 +1,13 @@
+{
+  "name": "risicare",
+  "displayName": "Risicare",
+  "version": "0.1.0",
+  "description": "Add, extend, debug and explain Risicare (AI agent and LLM tracing) in Python and JavaScript projects.",
+  "author": { "name": "Conscience Labs" },
+  "homepage": "https://risicare.ai/docs",
+  "repository": "https://github.com/Conscience-AI-Labs/risicare-skills",
+  "license": "LicenseRef-Proprietary",
+  "keywords": ["risicare", "tracing", "observability", "llm", "agents"],
+  "category": "observability",
+  "skills": "./skills/"
+}
