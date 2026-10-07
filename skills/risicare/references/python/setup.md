@@ -14,10 +14,10 @@ description: "Read when adding Risicare to a service for the first time: install
 
 1. Read the installed version from the lockfile, `python -m pip show risicare`, or (no pip in
    the venv) `python -c "import importlib.metadata as m; print(m.version('risicare'))"`. A
-   `PackageNotFoundError` means "not installed". If it is older than 0.5.1: Stop. Return to
+   `PackageNotFoundError` means "not installed". If it is older than 0.6.0: Stop. Return to
    the SKILL.md router.
-2. Add `risicare>=0.5.1` to the project's dependency file with its own package manager.
-   Example: `pip install 'risicare>=0.5.1'`. It needs `risicare-core>=0.1.8`; do not pin
+2. Add `risicare>=0.6.0` to the project's dependency file with its own package manager.
+   Example: `pip install 'risicare>=0.6.0'`. It needs `risicare-core>=0.1.8`; do not pin
    `risicare-core` lower. Quote every version range and every extra: `pip install 'risicare[langchain]'`.
 3. Do not add an extra for a package that the project already depends on. An extra only pulls
    the third-party package. Extras do not exist for `openai`, `anthropic`, `cohere`,
@@ -36,7 +36,7 @@ description: "Read when adding Risicare to a service for the first time: install
 
 ## Code
 
-<!-- checked against risicare 0.5.1 -->
+<!-- checked against risicare 0.6.0 -->
 ```python
 import openai
 import risicare
@@ -71,20 +71,20 @@ more positional arguments raises `TypeError`. Pass only what the user asks for, 
 
 | Mistake | Symptom | Fix |
 |---|---|---|
-| No `RISICARE_API_KEY` | One WARNING `NO exporter is configured`; spans dropped; `flush()` still returns `True` | Tell the user to set the key. The WARNING says `Pass api_key="rsk-..."`: do not. The environment variable wins; never write the key in code |
+| No `RISICARE_API_KEY` | One WARNING `no API key is set. The SDK sends nothing to Risicare`; `is_enabled()` and `flush()` are `False` | Tell the user to set the key. The WARNING says `pass api_key="rsk-..."`: do not. The environment variable wins; never write the key in code |
 | Key only in a `.env` file | The same WARNING: the SDK does not read `.env` | Load it with `python-dotenv` before `init()` |
 | A second `init()` with other arguments | The new arguments are ignored without an error | Keep one `init()` at process start |
 | `RISICARE_TRACING` set to `off`, `false`, `0`, `no` or an unknown value | Tracing is off. An unknown value logs one WARNING `is not a recognised value, so tracing is OFF` | Unset it, or set `true` |
 | `debug=True` | Whole span payloads printed to stdout, unredacted | Remove it |
 | `exporters=[...]` passed to `init()` | WARNING `Custom exporters provided — automatic HttpExporter disabled`; nothing reaches Risicare | Remove it |
-| `flush()` returned `True`, so "spans arrived" | `True` means "nothing lost". It is also `True` when nothing was sent: no key, or tracing off | Check the key, and that the trace id is not `None` |
+| `flush()` returned `True`, so "spans arrived" | `True` means every accepted span was delivered. It is also `True` when the code made no span | Require exported spans ≥ EXPECTED, and a trace id that is not `None` |
 | `init(key, endpoint, project_id)` written for 0.3.0 | `TypeError: init() takes from 0 to 1 positional arguments` | Pass keywords |
 
 ## Verification
 
 Run the Verify loop. Call `risicare.flush()` one time at the end and trust its boolean. When
 it is `False`, read `risicare.get_metrics()`: `exported_spans` (accepted spans only),
-`rejected_spans`, `failed_exports`, `failed_scores`, `queue_size`, `dropped_spans` and
-`dropped_spans_by_reason` (`queue_full`, `transport_refused`, `shutdown_residue`,
-`unacknowledged`). `risicare.get_current_trace_id()` inside the trace gives the id; it is `None`
+`rejected_spans`, `failed_scores`, `queue_size`, `dropped_spans` and `dropped_spans_by_reason`
+(`queue_full`, `transport_refused`, `shutdown_residue`, `unacknowledged`). `failed_exports` is
+not a loss counter. `risicare.get_current_trace_id()` inside the trace gives the id; it is `None`
 when tracing is off.

@@ -10,9 +10,9 @@ description: >-
   upgrading the Risicare SDK.
 license: Proprietary. LICENSE has complete terms
 metadata:
-  version: "0.1.0"
-  sdk_python: ">=0.5.1"
-  sdk_javascript: ">=0.8.0"
+  version: "0.1.1"
+  sdk_python: ">=0.6.0"
+  sdk_javascript: ">=0.9.0"
 ---
 
 # Risicare
@@ -45,7 +45,7 @@ the reference in your report. Detect, capabilities, hard rules and Verify are en
 |---|---|---|
 | Language | `pyproject.toml`, `requirements*.txt`, `setup.py`, `Pipfile`, `uv.lock`, `poetry.lock` → Python. `package.json`, `tsconfig.json` → JavaScript | Load only the Python or only the JavaScript references |
 | Both languages | Find the service that the request is about: the file the user named or has open | Still unclear: ask the user. One service per run |
-| Existing Risicare | `import risicare`, `from risicare`, a match for `risicare['"/]` in JavaScript (also subpaths such as `risicare/openai`), `RISICARE_*` variables, an `init(` call. Read the version from the lockfile or `npm ls risicare --depth=0`. Python, also: `python -c "import importlib.metadata as m; print(m.version('risicare'))"` (works in a `uv` venv with no pip) | Audit and extend. Do not add a second `init()`. Put the version in the summary. PyPI 0.5.1 and npm 0.8.0 are the floor |
+| Existing Risicare | `import risicare`, `from risicare`, a match for `risicare['"/]` in JavaScript (also subpaths such as `risicare/openai`), `RISICARE_*` variables, an `init(` call. Read the version from the lockfile or `npm ls risicare --depth=0`. Python, also: `python -c "import importlib.metadata as m; print(m.version('risicare'))"` (works in a `uv` venv with no pip) | Audit and extend. Do not add a second `init()`. Put the version in the summary. PyPI 0.6.0 and npm 0.9.0 are the floor |
 | Providers and frameworks | Imports and dependency entries (`openai`, `anthropic`, `langchain`, …) | List them in the summary |
 | Other tracing | OpenTelemetry, Langfuse, Sentry or another vendor in the code | No coexistence rule is proven. Ask the user before you add Risicare next to it. Never remove it unasked |
 
@@ -68,7 +68,7 @@ you propose.
 | [`references/concepts/tiers.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/concepts/tiers.md) | Read when choosing how much instrumentation to add (tiers 0 to 5). |
 | [`references/verify.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/verify.md) | Read after every change, to prove that spans arrive (required). |
 | [`references/troubleshooting.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/troubleshooting.md) | Read when traces do not appear, a `risicare` WARNING appears, or a call is not traced. |
-| [`references/older-versions.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/older-versions.md) | Read when the installed SDK is older than PyPI 0.5.1 or npm 0.8.0, or when the user asks to upgrade the SDK. |
+| [`references/older-versions.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/older-versions.md) | Read when the installed SDK is older than PyPI 0.6.0 or npm 0.9.0, or when the user asks to upgrade the SDK. |
 | [`references/error-taxonomy.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/error-taxonomy.md) | Read when the user asks what a Risicare error code means, or which code to expect for a failure; grep this file for the code or a keyword. |
 | [`references/skill-feedback.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/skill-feedback.md) | Read when the user says this skill gave wrong or missing guidance. |
 
@@ -106,8 +106,8 @@ stop. Eval: `refusal-py-multi-agent-plain-diagnosis`, `refusal-py-langgraph-agen
    (or `endpoint=` with that host) is present, remove it. Scores sent there fail with
    `HTTP 307`. Do not replace it with another host.
 3. **Never set debug for verification.** Python `debug=True` prints whole span payloads to
-   stdout, unredacted. JavaScript `debug: true` with no key and tracing forced on counts printed
-   spans as exported. For Python debug logs, use
+   stdout, unredacted, also with no key (it counts none as exported). JavaScript `debug: true`
+   with no key prints no span. For Python debug logs, use
    `logging.getLogger("risicare").setLevel(logging.DEBUG)`. Never raise the root logger to
    DEBUG: a provider SDK's own logger can then print prompt text.
 4. **Content.** Prompt and completion text need both the SDK switch and the project setting.
@@ -117,7 +117,7 @@ stop. Eval: `refusal-py-multi-agent-plain-diagnosis`, `refusal-py-langgraph-agen
    named imports; there is no default export.
 6. **Scores.** Never tell the user that a score was recorded. Say "accepted by the api" only
    when `flush()` returned true after the score. A value outside [0, 1] is not sent: one WARNING,
-   and `flush()` does not show it. Check the value range in the code.
+   and the next `flush()` is false. Check the value range in the code.
 7. **`RISICARE_TRACING` values** (both SDKs, trimmed, any case). On: `true`, `1`, `yes`, `on`.
    Off: `false`, `0`, `no`, `off`. Empty is unset. Any other value turns tracing off with one
    WARNING. Leave it unset, except for Python tier 0.
@@ -152,11 +152,10 @@ stop. Eval: `refusal-py-multi-agent-plain-diagnosis`, `refusal-py-langgraph-agen
 Follow [`references/verify.md`](https://raw.githubusercontent.com/Conscience-AI-Labs/risicare-skills/main/skills/risicare/references/verify.md). This summary is enough to run alone:
 
 1. Install with the project's package manager, and set no endpoint. Python:
-   `pip install 'risicare>=0.5.1'`. JavaScript: `npm install 'risicare@^0.8.0'`.
-2. Check that `RISICARE_API_KEY` is set, without printing it. Debug off. With no key, or with
-   tracing off, `flush()` returns true and sends nothing. Python `is_enabled()` stays true with
-   no key, so the key check is required. JavaScript with `RISICARE_TRACING=true` and no key:
-   `isEnabled()` is true and `flush()` is false.
+   `pip install 'risicare>=0.6.0'`. JavaScript: `npm install 'risicare@^0.9.0'`.
+2. Check that `RISICARE_API_KEY` is set, without printing it. Debug off. With no key, the SDK
+   sends nothing: `is_enabled()` / `isEnabled()` is false, `flush()` is false, and `init()` logs
+   one WARNING. Keep the key check: it tells the user what to do.
 3. Call `init()` once at process start (it reads the key). Run one LLM call in a trace. Python:
    `import risicare`, `risicare.init()`, then `with risicare.trace(name="first-call"):`.
    JavaScript: `init()` from `risicare`; `patchOpenAI(new OpenAI())` from `risicare/openai` (use
@@ -169,11 +168,12 @@ Follow [`references/verify.md`](https://raw.githubusercontent.com/Conscience-AI-
    `isEnabled()`. Take the trace id inside the trace. Python `get_current_trace_id()` returns
    `None` outside a span.
 6. Call `flush()` (JavaScript: `await flush()`) one time at the end. Require true, and exported
-   spans ≥ EXPECTED. A true alone proves nothing in a signal handler or after `shutdown()`.
-   When false, read `get_metrics()` / `getMetrics()`: dropped spans by reason, rejected spans,
+   spans ≥ EXPECTED. From Python 0.6.0 / npm 0.9.0, a true is also exact in a signal handler and
+   after `shutdown()`: it means every accepted span was delivered. A loss makes one `flush()`
+   false, and the next one true. When false, read `get_metrics()` / `getMetrics()`: dropped spans by reason, rejected spans,
    failed scores.
-7. Do not require failed exports to be 0. A batch that got 429 for one retry round and was
-   then delivered counts 1.
+7. Do not require failed exports to be 0. It counts each export call that failed as a whole; a
+   later round can still deliver. A 429 that a retry in the same call repairs counts 0.
 8. `flush()` returns by its deadline (default 5 s); it only waits. To end a process in a
    fixed time, call `shutdown(timeout)`.
 9. Print the trace id. Ask the user for the project UUID (it is in the dashboard URL) and give the

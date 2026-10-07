@@ -3,7 +3,7 @@
 One skill that teaches a coding agent to add, extend, debug and explain
 [Risicare](https://risicare.ai) tracing in a Python or JavaScript project, and to prove that a trace arrived.
 
-It targets the released SDKs: `risicare>=0.5.1` on PyPI and `risicare@>=0.8.0` on npm.
+It targets the released SDKs: `risicare>=0.6.0` on PyPI and `risicare@>=0.9.0` on npm.
 
 ## Install
 

@@ -3,6 +3,24 @@
 Semantic versioning: patch for clarifications and fixes, minor for new capability, major for removed or
 renamed behaviour.
 
+## 0.1.1 (unreleased)
+
+Moves the skill to the released SDKs: `risicare>=0.6.0` (PyPI) and `risicare@>=0.9.0` (npm). The two are minor releases, so
+`~=0.5.0` and `^0.8.0` do not take them.
+
+- A true `flush()` now means that every accepted span was delivered, also in a signal handler and after `shutdown()`. A
+  loss makes one `flush()` false, and the next one true. The Verify steps say so. JavaScript: register your own SIGTERM or SIGINT
+  listener before `init()` if it makes spans that must be delivered.
+- With no API key the SDK sends nothing, `is_enabled()` / `isEnabled()` and `flush()` are false, and `init()` logs one
+  WARNING. `flush()` is also false before `init()` and with tracing off.
+- A score outside [0, 1] counts as a failed score: the next `flush()` is false.
+- Fixed on every version: the failed-exports count counts each export call that failed as a whole; a later round can still deliver. A 429
+  that a retry in the same call repairs counts 0.
+- Older SDKs: `references/older-versions.md` has a new band for Python 0.5.0 to 0.5.1 and npm 0.8.0. It lists what is different on
+  that band, what changes on the upgrade, and how to upgrade across the minor version.
+- Not measured by agent runs: every text change of this release, and the licence text. The checks were loopback probes of each
+  changed sentence against the published SDKs, and the replay of the recorded test runs on the new SDK versions.
+
 ## 0.1.0 (unreleased)
 
 First version of the `risicare` Agent Skill.

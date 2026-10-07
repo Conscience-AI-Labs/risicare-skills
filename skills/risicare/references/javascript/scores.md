@@ -30,7 +30,7 @@ description: "Read when the user wants to record a quality score on a trace or r
 
 ## Code
 
-<!-- checked against risicare 0.8.0 (ESM run against a loopback sink; tsc strict + verbatimModuleSyntax) -->
+<!-- checked against risicare 0.9.0 (ESM run against a loopback sink; tsc strict + verbatimModuleSyntax) -->
 ```ts
 import { getTracer, score, reportError, flush, getMetrics } from 'risicare';
 const tracer = getTracer(); // undefined before init(): then the work runs untraced
@@ -49,7 +49,7 @@ if (!(await flush())) console.warn('risicare: not delivered', getMetrics().faile
 | If code shows | Add | Why |
 |---|---|---|
 | An evaluator, a grader or user feedback with a value | `score(traceId, name, value)` | Sends the value for the trace |
-| A value on another scale (1–5, 0–100) | Scale it into [0, 1] first | A value outside the range, NaN or a non-number writes one WARNING and is not sent. `failedScores` and `flush()` do not show it |
+| A value on another scale (1–5, 0–100) | Scale it into [0, 1] first | A value outside the range, NaN or a non-number writes one WARNING and is not sent. It counts in `failedScores`: the next `flush()` is `false` |
 | A score that belongs to one step | `{ spanId }` of that span | Ties the score to the span |
 | Free text with the score | `{ comment }` | It passes through `mask` under the key `score.comment`. It is sent also with content capture off: KNOWN-ISSUE (risicare-sdk #68) |
 | An error that is caught and not re-thrown | `reportError(err)` | Makes an error span with an `error.code`; the same error makes at most one span per 5 min |
@@ -73,4 +73,4 @@ matches gets `TOOL.EXECUTION.CRASHED`.
 
 Run the Verify loop. `await flush()` covers the scores. When it returns `false` and
 `failedScores` is above 0, read the stderr WARNING `score "<name>" failed:` for the HTTP status
-or the error. A value that the SDK refused shows only as a stderr WARNING `score: the value`.
+or the error. A value that the SDK refused also writes the stderr WARNING `score: the value`, and counts in `failedScores`.

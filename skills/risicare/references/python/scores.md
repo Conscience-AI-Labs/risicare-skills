@@ -26,7 +26,7 @@ description: "Read when the user wants to record a quality score on a trace or r
 
 ## Code
 
-<!-- checked against risicare 0.5.1 -->
+<!-- checked against risicare 0.6.0 -->
 ```python
 with risicare.trace(name="answer-question"):
     answer = run_agent(question)
@@ -45,7 +45,7 @@ if not risicare.flush():                    # waits for the score request
 | If code shows | Add | Why |
 |---|---|---|
 | An evaluator, a grader or user feedback with a value | `risicare.score(trace_id, name, value)` | Sends the value for the trace |
-| A value on another scale (1–5, 0–100) | Scale it into [0.0, 1.0] first | A value outside the range is not sent (one WARNING). `failed_scores` and `flush()` do not show it |
+| A value on another scale (1–5, 0–100) | Scale it into [0.0, 1.0] first | A value outside the range is not sent (one WARNING). It counts in `failed_scores`: the next `flush()` is `False` |
 | A score that belongs to one step | `span_id=` of that span | Ties the score to the span |
 | Free text with the score | `comment=` | It passes through `mask=` under the key `score.comment`. It is sent also with content capture off: KNOWN-ISSUE (risicare-sdk #68) |
 | An exception that is caught and not re-raised | `risicare.report_error(exc)` | Records it with a coarse `error.code`. Outside a span, the same error makes at most one span per 5 min; inside a span, every call is recorded |
@@ -70,6 +70,7 @@ it makes a separate span `error:{ExceptionType}`. It never raises.
 ## Verification
 
 Call `risicare.flush()` one time at the end. When it is `False`, read
-`risicare.get_metrics()["failed_scores"]` and the WARNING `score '<name>' failed: <reason>`.
+`risicare.get_metrics()["failed_scores"]` and the WARNING `score '<name>' failed: <reason>`, or `score: the
+value must be …` for a value that the SDK refused.
 Later failures within 10 s share one WARNING: `N more scores failed after the last warning`.
 Run the Verify loop for the spans.

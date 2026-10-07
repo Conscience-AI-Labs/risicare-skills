@@ -1,12 +1,12 @@
 {
   "name": "risicare-skills",
   "owner": { "name": "Conscience Labs" },
-  "metadata": { "description": "The Risicare Agent Skill.", "version": "0.1.0" },
+  "metadata": { "description": "The Risicare Agent Skill.", "version": "0.1.1" },
   "plugins": [
     {
       "name": "risicare",
       "description": "Add, extend, debug and explain Risicare (AI agent and LLM tracing) in Python and JavaScript projects.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": { "name": "Conscience Labs" },
       "homepage": "https://risicare.ai/docs",
       "repository": "https://github.com/Conscience-AI-Labs/risicare-skills",
